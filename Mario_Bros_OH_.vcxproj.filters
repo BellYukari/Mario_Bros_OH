@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Archivos de encabezado">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Archivos de recursos">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="img">
+      <UniqueIdentifier>{f91528bc-3364-4378-a66d-09bf9d6a876b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nivel">
+      <UniqueIdentifier>{eb1d1a40-cac6-4f55-bc38-436e5ee4c371}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mario.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="text.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mario.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="text.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Desktop\MarioNES-master\Public Release\Resources\Title.png">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="..\..\..\Desktop\MarioNES-master\Public Release\Resources\enemies_sprites.png">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="..\..\..\Desktop\MarioNES-master\Public Release\Resources\mariosheet.png">
+      <Filter>img</Filter>
+    </Image>
+    <Image Include="..\..\..\Desktop\MarioNES-master\Public Release\Resources\Tilesheet.png">
+      <Filter>img</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Desktop\MarioNES-master\Public Release\Levels\1-1.wd">
+      <Filter>nivel</Filter>
+    </None>
+  </ItemGroup>
+</Project>
