@@ -1,73 +1,108 @@
 #include <iostream>
-#include "Mario.h" // Incluir la clase Mario para controlar al personaje principal
-#include "text.h"  // Incluir la clase Tile para manejar los bloques y el entorno del juego
+#include "Mario.h"      // Incluir la clase Mario para controlar al personaje principal
+#include "text.h"       // Incluir la clase Tile para manejar los bloques y el entorno del juego
+#include "Menu.h"       // Incluir la clase Menu para el menú principal
 #include <vector>
-#include <SFML/Graphics.hpp> // Librería SFML para gráficos y ventanas
+#include <SFML/Graphics.hpp>
 
 int main() {
     sf::Clock Clock; // Reloj para medir el tiempo transcurrido en cada frame
 
-    int windowWidth = 1024; // Ancho de la ventana de juego
-    int windowHeight = 896; // Altura de la ventana de juego
-    bool restart = false; // Bandera para reiniciar el juego
+    int windowWidth = 1050;
+    int windowHeight = 896;
+    bool inGame = false;
+    bool showIntro = true;  // Mostrar intro al principio
 
-    // Crear la ventana de juego con el tamaño especificado y el título
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Super Mario World");
 
-    Mario mario; // Instanciar el objeto Mario para controlar al personaje
-    Entity entity; // Instanciar la entidad que contendrá elementos del juego (como enemigos y bloques)
+    Mario mario;
+    Entity entity;
 
-    // Cargar las texturas de los gráficos del juego (tiles y enemigos)
+    // Texturas para el juego
     sf::Texture texture;
-    texture.loadFromFile("img/Tilesheet.png"); // Textura de los bloques y fondo
+    texture.loadFromFile("img/Tilesheet.png");
 
     sf::Texture enemyset;
-    enemyset.loadFromFile("img/enemies_sprites.png"); // Textura de los enemigos
+    enemyset.loadFromFile("img/enemies_sprites.png");
 
-    // Cargar el nivel desde un archivo, configurando las entidades, texturas y colores de fondo
+    // Cargar el nivel desde un archivo
     entity.LoadFromFile("nivel/1-1.wd", sf::Color(26, 128, 182, 255), mario, entity, texture, enemyset);
 
-    // Configurar la vista inicial de la cámara, centrada en la ventana
+    // Configurar la vista inicial de la cámara
     sf::View view(sf::FloatRect(0, 0, windowWidth, windowHeight));
-    unsigned view_x = 0; // Variable para el desplazamiento horizontal de la vista
+    unsigned view_x = 0;
 
-    // Bucle principal del juego
-    while (window.isOpen())
-    {
-        sf::Event Event; // Evento para manejar interacciones como cerrar la ventana
-        float deltaTime = Clock.restart().asSeconds(); // Tiempo transcurrido desde el último frame
+    // Instanciar el menú principal
+    Menu menu(windowWidth, windowHeight);
 
-        // Bucle de eventos para verificar eventos dentro de la ventana
-        while (window.pollEvent(Event))
-        {
-            if (Event.type == sf::Event::Closed) // Si se cierra la ventana
+    while (window.isOpen()) {
+        sf::Event Event;
+        float deltaTime = Clock.restart().asSeconds();
+
+        // Bucle de eventos
+        while (window.pollEvent(Event)) {
+            if (Event.type == sf::Event::Closed)
                 window.close();
+
+            // Lógica de navegación del menú
+            if (!inGame) {
+                if (Event.type == sf::Event::KeyPressed) {
+                    if (Event.key.code == sf::Keyboard::Up) menu.moveUp();
+                    if (Event.key.code == sf::Keyboard::Down) menu.moveDown();
+                    if (Event.key.code == sf::Keyboard::Enter) {
+                        int selectedItem = menu.getPressedItem();
+                        if (selectedItem == 0) {
+                            showIntro = true;
+                            menu.resetIntro();  // Reseteamos la intro cuando selecciona iniciar
+                        }
+                        else if (selectedItem == 2) {
+                            window.close(); // Opción "Salir" seleccionada, cerrar ventana
+                        }
+                    }
+                }
+            }
         }
 
-        // Ajustar la vista según la posición de Mario para desplazar la cámara
-        if (mario.getPosition().x >= windowWidth / 2)
-        {
-            view_x = mario.getPosition().x - windowWidth / 2;
+        if (showIntro) {
+            if (menu.isIntroComplete()) {
+                inGame = true;  // Empieza el juego
+                showIntro = false;  // Termina la intro
+            }
+            else {
+                window.clear();
+                menu.draw(window);  // Dibuja la intro
+                window.display();
+                continue;
+            }
         }
-        view.reset(sf::FloatRect(view_x, 0, windowWidth, windowHeight)); // Actualizar la vista
-        mario.vision.setPosition(view_x, 0); // Actualizar la posición de la "visión" de Mario
 
-        // Reiniciar el juego si se presiona Enter
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
-            restart = true;
+        if (inGame) {
+            // Lógica y dibujo del juego
+            if (mario.getPosition().x >= windowWidth / 2) {
+                view_x = mario.getPosition().x - windowWidth / 2;
+            }
+            view.reset(sf::FloatRect(view_x, 0, windowWidth, windowHeight));
+            mario.vision.setPosition(view_x, 0);
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                inGame = false;
+            }
+
+            window.setView(view);
+            mario.update(deltaTime, entity.Sprite_v);
+
+            // Dibujar juego
+            window.clear(sf::Color(135, 206, 235, 255));
+            entity.DrawToScreen(window, mario, deltaTime, entity.Sprite_v);
+        }
+        else {
+            // Dibujar el menú
+            window.clear();
+            menu.draw(window);
         }
 
-        // Configurar la vista en la ventana y actualizar el estado de Mario
-        window.setView(view);
-        mario.update(deltaTime, entity.Sprite_v);
-
-        // Limpiar la pantalla con el color de fondo
-        window.clear(sf::Color(26, 128, 182, 255));
-
-        // Dibujar entidades y elementos del juego en la pantalla
-        entity.DrawToScreen(window, mario, deltaTime, entity.Sprite_v);
-
-        // Mostrar los elementos dibujados en pantalla
         window.display();
     }
+
+    return 0;
 }

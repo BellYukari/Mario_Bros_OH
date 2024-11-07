@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Brayan Matute\source\repos\Mario_Bros_OH\Librerias\SFML-2.6.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Brayan Matute\source\repos\Mario_Bros_OH\Librerias\SFML-2.6.1\lib;C:\Users\henry\Desktop\SFML-2.6.1\lib;$(LibraryPath);$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\henry\Desktop\SFML-2.6.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\henry\Desktop\SFML-2.6.1\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\Brayan Matute\source\repos\Mario_Bros_OH\Librerias\SFML-2.6.1\include;$(IncludePath)</IncludePath>
@@ -139,10 +139,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mario.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mario.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="text.h" />
   </ItemGroup>
   <ItemGroup>
