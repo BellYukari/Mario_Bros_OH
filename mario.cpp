@@ -1,10 +1,53 @@
 #include "Mario.h"
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
+
+sf::SoundBuffer jumpBuffer;
+sf::Sound jumpSound;
+bool isJumpingSoundPlayed = false;
+static sf::Music mushroomMusic;
+static sf::Music deathMusic; // Música de la muerte
+bool isDeathMusicPlayed = false;
+sf::Music backgroundMusic;
+sf::Sound finishSound;
+sf::SoundBuffer finishBuffer;
+bool finishSoundPlayed = false;
+
+void cargarSonidoSalto() {
+    if (!jumpBuffer.loadFromFile("musica/smb_jump-small.wav")) {
+        std::cerr << "Error al cargar el sonido de salto." << std::endl;
+    }
+    jumpSound.setBuffer(jumpBuffer);
+}
+
+void cargarMusicaMushroom() {
+    if (!mushroomMusic.openFromFile("musica/smb_powerup.wav")) {
+        // Manejar error si el archivo no se carga
+        std::cerr << "Error al cargar la música del hongo." << std::endl;
+    }
+    mushroomMusic.setLoop(true); // Configura la música para que se repita en bucle
+}
+
+void cargarMusicaMuerte() {
+    if (!deathMusic.openFromFile("musica/smb_gameover.wav")) {
+        std::cerr << "Error al cargar la música de la muerte." << std::endl;
+    }
+    deathMusic.setLoop(false); // No repetir la música
+}
+
+void cargarSonidoFinal() {
+    if (!finishBuffer.loadFromFile("musica/smb_stage_clear.wav")) { // Asegúrate de tener el archivo correcto
+        std::cerr << "Error al cargar el sonido de finalización." << std::endl;
+    }
+    finishSound.setBuffer(finishBuffer);
+}
+
 
 // Constructor de la clase Mario
 Mario::Mario() {
+
     texture.loadFromFile("img/mariosheet.png"); // Carga la textura del sprite desde el archivo de imagen
     sprite.setTexture(texture); // Asigna la textura al sprite
 
@@ -22,6 +65,17 @@ Mario::Mario() {
     sprite.setPosition(sf::Vector2f(100, 0)); // Coloca a Mario en la posición inicial
 
     vision.setSize(sf::Vector2f(1024, 968)); // Establece el tamaño de la visión de Mario
+
+    cargarSonidoSalto();
+    cargarMusicaMushroom();
+    cargarMusicaMuerte();
+    cargarSonidoFinal();
+
+    if (!backgroundMusic.openFromFile("musica/MarioSound.wav")) {
+        std::cerr << "Error al cargar la música de fondo." << std::endl;
+    }
+    backgroundMusic.setLoop(true); // Configura la música para que se repita en bucle
+    backgroundMusic.play();
 }
 
 // Método que retorna la posición actual de Mario
@@ -87,6 +141,11 @@ void Mario::animate(std::string animation)
     }
 
     else if (animation == "jumping") { // Animación de salto
+
+        if (!isJumpingSoundPlayed && jumpSound.getStatus() != sf::Sound::Playing) {
+            jumpSound.play();
+            isJumpingSoundPlayed = true; // Marcar como sonido ya reproducido
+        }
         if (small) {
             sprite.setTextureRect(sf::IntRect(29, 0, 17, 17));
             if (key == "left") {
@@ -105,8 +164,13 @@ void Mario::animate(std::string animation)
                 sprite.setScale(sf::Vector2f(-scale, scale));
             }
         }
+
     }
     else if (animation == "mushroom") { // Animación de Mario al obtener un hongo
+        if (mushroomMusic.getStatus() != sf::Music::Playing) { // Evita múltiples reproducciones
+            mushroomMusic.play();
+        }
+
         sprite.setPosition(position);
         if (key == "right") {
             sprite.setScale(sf::Vector2f(scale, scale));
@@ -125,6 +189,7 @@ void Mario::animate(std::string animation)
             frameCounter.restart();
         }
         if (mushroom_count > 5) {  // Restablece el contador tras la animación del hongo
+            mushroomMusic.stop(); // Detén la música después de la animación
             pause = false;
             mushroom_count = 0;
             if (isJumping) {
@@ -230,60 +295,65 @@ void Mario::Collision(std::vector<sf::Sprite>& tiles) {
             }
         }
     }
-// Verifica si Mario no es pequeño y no está agachado
-if (!small && !crouching) {
-    // Configura el tamaño y origen del hitbox de Mario
-    hitbox.setSize(sf::Vector2f(52, 104));
-    hitbox.setOrigin(26, 52);
 
-    // Recorre todos los tiles para verificar colisiones
-    for (int i = 0; i < tiles.size(); i++) {
-        // Comprueba si el hitbox de Mario intersecta con el tile actual
-        if (hitbox.getGlobalBounds().intersects(tiles[i].getGlobalBounds())) {
-            // Si Mario choca desde la derecha del tile, detiene su movimiento hacia la derecha
-            if (rc(tiles[i])) {
-                velocity.x = 0;
-                right_collide = true;
-                right = true;
-            }
+    if (a) {  // Si está en el suelo
+        isJumpingSoundPlayed = false; // Restablece la bandera para permitir un nuevo sonido al saltar
+    }
+    // Verifica si Mario no es pequeño y no está agachado
+    if (!small && !crouching) {
+        // Configura el tamaño y origen del hitbox de Mario
+        hitbox.setSize(sf::Vector2f(52, 104));
+        hitbox.setOrigin(26, 52);
 
-            // Si Mario choca desde la izquierda del tile, detiene su movimiento hacia la izquierda
-            if (lc(tiles[i])) {
-                velocity.x = 0;
-                left_collide = true;
-                left = true;
-            }
+        // Recorre todos los tiles para verificar colisiones
+        for (int i = 0; i < tiles.size(); i++) {
+            // Comprueba si el hitbox de Mario intersecta con el tile actual
+            if (hitbox.getGlobalBounds().intersects(tiles[i].getGlobalBounds())) {
+                // Si Mario choca desde la derecha del tile, detiene su movimiento hacia la derecha
+                if (rc(tiles[i])) {
+                    velocity.x = 0;
+                    right_collide = true;
+                    right = true;
+                }
 
-            // Si Mario está sobre el tile, ajusta su posición para que esté justo encima y detiene su caída
-            if (onTop(tiles[i])) {
-                sprite.setPosition(sf::Vector2f(sprite.getPosition().x, tiles[i].getGlobalBounds().top - 52));
-                velocity.y = 0;
-                isJumping = false; // Mario ya no está saltando
-                collide = true;    // Marca colisión en el suelo
-                a = true;          // Bandera auxiliar para colisión
-            }
+                // Si Mario choca desde la izquierda del tile, detiene su movimiento hacia la izquierda
+                if (lc(tiles[i])) {
+                    velocity.x = 0;
+                    left_collide = true;
+                    left = true;
+                }
 
-            // Si Mario está debajo del tile, ajusta su posición y lo empuja ligeramente hacia abajo
-            if (beneath(tiles[i])) {
-                sprite.setPosition(sf::Vector2f(sprite.getPosition().x, tiles[i].getGlobalBounds().top + tiles[i].getGlobalBounds().height + 52));
-                velocity.y = 10;   // Empuja a Mario hacia abajo
+                // Si Mario está sobre el tile, ajusta su posición para que esté justo encima y detiene su caída
+                if (onTop(tiles[i])) {
+                    sprite.setPosition(sf::Vector2f(sprite.getPosition().x, tiles[i].getGlobalBounds().top - 52));
+                    velocity.y = 0;
+                    isJumping = false; // Mario ya no está saltando
+                    isJumpingSoundPlayed = false;
+                    collide = true;    // Marca colisión en el suelo
+                    a = true;          // Bandera auxiliar para colisión
+                }
+
+                // Si Mario está debajo del tile, ajusta su posición y lo empuja ligeramente hacia abajo
+                if (beneath(tiles[i])) {
+                    sprite.setPosition(sf::Vector2f(sprite.getPosition().x, tiles[i].getGlobalBounds().top + tiles[i].getGlobalBounds().height + 52));
+                    velocity.y = 10;   // Empuja a Mario hacia abajo
+                }
             }
         }
     }
-}
 
-// Si no hubo colisión en el suelo, desactiva la bandera de colisión
-if (!a) {
-    collide = false;
-}
-// Si no hubo colisión hacia la izquierda, desactiva la bandera de colisión izquierda
-if (!left) {
-    left_collide = false;
-}
-// Si no hubo colisión hacia la derecha, desactiva la bandera de colisión derecha
-if (!right) {
-    right_collide = false;
-}
+    // Si no hubo colisión en el suelo, desactiva la bandera de colisión
+    if (!a) {
+        collide = false;
+    }
+    // Si no hubo colisión hacia la izquierda, desactiva la bandera de colisión izquierda
+    if (!left) {
+        left_collide = false;
+    }
+    // Si no hubo colisión hacia la derecha, desactiva la bandera de colisión derecha
+    if (!right) {
+        right_collide = false;
+    }
 
 }
 
@@ -291,14 +361,23 @@ if (!right) {
 void Mario::update(float deltaTime, std::vector<sf::Sprite> tiles)
 {
     if (finish) { // Si Mario ha terminado el nivel
+        if (backgroundMusic.getStatus() == sf::Music::Playing) {
+            backgroundMusic.stop(); // Detener la música de fondo
+        }
+        if (!finishSoundPlayed) { // Reproduce el sonido de finalización solo una vez
+            finishSound.play();
+            finishSoundPlayed = true;
+        }
         if (stage == 0) { // Primer etapa después de terminar
             velocity.y = 300.0f; // Mario se mueve hacia abajo
+
         }
         sprite.move(velocity * deltaTime); // Mueve el sprite de Mario
         Collision(tiles); // Verifica colisiones
         if (collide && stage == 0) { // Si hay colisión en la primera etapa
             stage = 1;
             finish_counter = 0;
+
         }
         if (stage == 1) { // Segunda etapa
             sprite.setScale(-scale, scale); // Invierte la escala horizontal
@@ -311,6 +390,7 @@ void Mario::update(float deltaTime, std::vector<sf::Sprite> tiles)
             }
         }
         if (stage == 3) { // Etapa de carrera final
+          
             animate("running"); // Anima a Mario corriendo
             velocity.x = 150.0f; // Velocidad de avance
             velocity.y += 1500.0f; // Aplica gravedad
@@ -323,11 +403,21 @@ void Mario::update(float deltaTime, std::vector<sf::Sprite> tiles)
             animate("idle"); // Mario en espera
             sprite.setScale(scale, scale); // Restaura escala
             velocity.y = 0; // Detiene movimiento vertical
+
         }
     }
 
     if (dead) { // Lógica cuando Mario está muerto
         sprite.setTextureRect(sf::IntRect(389, 15, 17, 17)); // Cambia la textura a la de "muerte"
+
+        if (backgroundMusic.getStatus() == sf::Music::Playing) {
+            backgroundMusic.stop(); // Detener la música de fondo
+        }
+
+        if (!isDeathMusicPlayed) {
+            deathMusic.play(); // Reproduce la música de la muerte
+            isDeathMusicPlayed = true; // Asegúrate de que no se repita
+        }
         if (frameCounter.getElapsedTime().asSeconds() > 0.01f && counter <= 40) {
             sprite.setPosition(sprite.getPosition().x, sprite.getPosition().y - 3); // Mario asciende
             counter++;

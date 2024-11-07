@@ -15,6 +15,9 @@
     <Filter Include="nivel">
       <UniqueIdentifier>{eb1d1a40-cac6-4f55-bc38-436e5ee4c371}</UniqueIdentifier>
     </Filter>
+    <Filter Include="musica">
+      <UniqueIdentifier>{f7505a8d-e18a-44d8-bba9-afc43d2e7e69}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mario.cpp">
@@ -53,5 +56,25 @@
     <None Include="..\..\..\Desktop\MarioNES-master\Public Release\Levels\1-1.wd">
       <Filter>nivel</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_coin.wav">
+      <Filter>musica</Filter>
+    </Media>
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_gameover.wav">
+      <Filter>musica</Filter>
+    </Media>
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_powerup.wav">
+      <Filter>musica</Filter>
+    </Media>
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_jump-small.wav">
+      <Filter>musica</Filter>
+    </Media>
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\MarioSound.wav">
+      <Filter>musica</Filter>
+    </Media>
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_stage_clear.wav">
+      <Filter>musica</Filter>
+    </Media>
   </ItemGroup>
 </Project>

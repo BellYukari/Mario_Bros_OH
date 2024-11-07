@@ -3,6 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include <fstream>
 #include <vector>
+#include <SFML/Audio.hpp>
+
+sf::SoundBuffer hitSoundBuffer;
+sf::Sound hitSound;
 
 Block::Block(sf::Texture& tileset, sf::IntRect rect, sf::Vector2f position, int type) {
 	block_sprite.setTexture(tileset);
@@ -70,6 +74,11 @@ CoinBlock::CoinBlock(sf::Texture& tileset, sf::IntRect rect, sf::Vector2f positi
 	Coinblock_sprite.setTextureRect(rect);
 	Coinblock_sprite.setScale(sf::Vector2f(2.0, 2.0));
 
+	if (!hitSoundBuffer.loadFromFile("musica/smb_coin.wav")) {
+		std::cerr << "Error al cargar el sonido de golpe" << std::endl;
+	}
+	hitSound.setBuffer(hitSoundBuffer);
+
 	if (type == 0) {
 		Coin_sprite.setTexture(tileset);
 		Coin_sprite.setPosition(sf::Vector2f(position.x + 8, position.y));
@@ -91,6 +100,7 @@ void CoinBlock::Collision(Mario& mario, std::vector<Mushroom>& Mushroom_v, std::
 	if (Coinblock_sprite.getGlobalBounds().intersects(mario.sprite.getGlobalBounds()) && mario.getPosition().y > Coinblock_sprite.getGlobalBounds().top + Coinblock_sprite.getGlobalBounds().height + 26 && mario.getPosition().x > Coinblock_sprite.getGlobalBounds().left - 10 && mario.getPosition().x < Coinblock_sprite.getGlobalBounds().left + Coinblock_sprite.getGlobalBounds().width + 10 && !hit && mario.velocity.y < 0) {
 		hit = true;
 		activated = true;
+		hitSound.play();
 	}
 
 	if (hit) {

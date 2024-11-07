@@ -71,8 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\henry\Desktop\SFML-2.6.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\henry\Desktop\SFML-2.6.1\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Brayan Matute\source\repos\Mario_Bros_OH\Librerias\SFML-2.6.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Brayan Matute\source\repos\Mario_Bros_OH\Librerias\SFML-2.6.1\lib;C:\Users\henry\Desktop\SFML-2.6.1\lib;$(LibraryPath);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\Brayan Matute\source\repos\Mario_Bros_OH\Librerias\SFML-2.6.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Brayan Matute\source\repos\Mario_Bros_OH\Librerias\SFML-2.6.1\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -129,6 +133,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -148,6 +153,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Desktop\MarioNES-master\Public Release\Levels\1-1.wd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\MarioSound.wav" />
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_coin.wav" />
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_gameover.wav" />
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_jump-small.wav" />
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_powerup.wav" />
+    <Media Include="..\..\..\Downloads\Programacion grafica y visual\Mario_Bros_OH-master\musica\smb_stage_clear.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
