@@ -9,6 +9,7 @@
 - [x] Víctor Tercero - 202130110061
 - [x] Owen Hernandez - 202010011089
 - [x] Yefrin Benigno Amaya - 201710010063
+- [ ] Kevin Perez - 201710010290
 <br><br>
 
 
